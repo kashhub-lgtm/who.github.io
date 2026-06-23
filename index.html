@@ -36,8 +36,7 @@
     }
 
     html {
-      scroll-behavior: smooth;
-      scroll-snap-type: y mandatory;
+      overflow: hidden;
     }
 
     body {
@@ -48,7 +47,7 @@
         radial-gradient(circle at 50% 75%, rgba(109, 53, 180, 0.22), transparent 30%),
         linear-gradient(135deg, #070915 0%, #130b28 25%, #261043 55%, #41145f 75%, #17081d 100%);
       color: var(--text);
-      overflow-x: hidden;
+      overflow: hidden;
       min-height: 100vh;
       position: relative;
       cursor: default;
@@ -260,17 +259,33 @@
     .page {
       position: relative;
       z-index: 3;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
     }
 
     .section {
-      min-height: 100vh;
-      scroll-snap-align: start;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-medium), transform var(--transition-medium);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 48px 16px;
-      position: relative;
       overflow: hidden;
+      z-index: 1;
+      transform: translateY(20px);
+    }
+
+    .section.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 5;
+      transform: translateY(0);
     }
 
     .section::after {
@@ -299,7 +314,7 @@
       -webkit-backdrop-filter: blur(20px);
       position: relative;
       overflow: hidden;
-      transform: translateY(40px);
+      transform: translateY(calc(40px + var(--parallax-offset, 0px)));
       opacity: 0;
       transition:
         transform var(--transition-slow),
@@ -338,7 +353,7 @@
     }
 
     .section.visible .card {
-      transform: translateY(0);
+      transform: translateY(var(--parallax-offset, 0px));
       opacity: 1;
     }
 
@@ -559,7 +574,7 @@
 
     .parallax {
       transform: translateY(var(--parallax-offset, 0px));
-      transition: transform 0.12s linear;
+      transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .final-section .card {
@@ -603,27 +618,123 @@
     }
 
     footer {
-      position: relative;
-      z-index: 3;
-      padding: 18px 16px 28px;
+      position: fixed;
+      bottom: 8px;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      padding: 0;
       text-align: center;
-      color: rgba(255,255,255,0.55);
-      font-size: 0.88rem;
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 0.75rem;
+      pointer-events: none;
     }
 
     .fade-divider {
       width: 120px;
       height: 1px;
-      margin: 0 auto 14px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
-      box-shadow: 0 0 12px rgba(255,255,255,0.14);
+      margin: 0 auto 6px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
+    }
+
+    /* Floating Navigation Controls */
+    .nav-controls {
+      position: fixed;
+      bottom: 34px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-family: "Inter", sans-serif;
+      outline: none;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .nav-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .nav-indicator {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      min-width: 48px;
+      text-align: center;
+    }
+
+    .nav-spotify-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: #fff;
+      background: linear-gradient(135deg, rgba(29, 185, 84, 0.25), rgba(20, 150, 65, 0.25));
+      border: 1px solid rgba(29, 185, 84, 0.4);
+      text-decoration: none;
+      font-family: "Inter", sans-serif;
+    }
+
+    .nav-spotify-btn:hover {
+      background: linear-gradient(135deg, rgba(29, 185, 84, 0.45), rgba(20, 150, 65, 0.45));
+      border-color: rgba(29, 185, 84, 0.7);
+      box-shadow: 
+        0 8px 20px rgba(29, 185, 84, 0.22),
+        0 0 15px rgba(29, 185, 84, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .nav-spotify-btn:active {
+      transform: translateY(0);
+    }
+
+    .nav-spotify-btn.hidden {
+      display: none;
     }
 
     @media (max-width: 900px) {
-      html {
-        scroll-snap-type: y proximity;
-      }
-
       .section-grid {
         grid-template-columns: 1fr;
       }
@@ -661,11 +772,32 @@
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
+    @media (max-width: 600px) {
+      .nav-controls {
+        bottom: 16px;
+        gap: 8px;
+        padding: 8px 16px;
+        width: calc(100% - 32px);
+        justify-content: space-between;
       }
+      .nav-btn {
+        padding: 8px 12px;
+        font-size: 0.82rem;
+      }
+      .nav-spotify-btn {
+        padding: 8px 12px;
+        font-size: 0.82rem;
+      }
+      .nav-indicator {
+        font-size: 0.8rem;
+        min-width: 36px;
+      }
+      footer {
+        display: none;
+      }
+    }
 
+    @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
       *::after {
@@ -694,9 +826,9 @@
   <div class="hearts-layer" id="hearts" aria-hidden="true"></div>
   <div class="mouse-glow" aria-hidden="true"></div>
 
-  <button class="music-toggle paused" id="musicToggle" type="button" aria-label="Toggle ambient music">
+  <button class="music-toggle paused" id="musicToggle" type="button" aria-label="Toggle music playback">
     <span class="music-dot"></span>
-    <span id="musicLabel">Ambient Music Off</span>
+    <span id="musicLabel">Music Off</span>
   </button>
 
   <audio id="ambientMusic" loop>
@@ -704,9 +836,9 @@
   </audio>
 
   <main class="page">
-    <section class="section visible" id="hero">
-      <div class="card parallax" data-speed="0.08">
-        <div class="content hero">
+    <section class="section visible active" id="hero">
+      <div class="card">
+        <div class="content hero parallax" data-speed="0.08">
           <div class="eyebrow">A cinematic love letter</div>
           <h1>My Soul & Stranger</h1>
 
@@ -727,14 +859,14 @@ Aaj chalo...
 Pyaar ko thoda purane tareeke se samajhne ki koshish karte hain.
           </p>
 
-          <div class="scroll-indicator">Scroll Down</div>
+          <div class="scroll-indicator">Click Next below to begin</div>
         </div>
       </div>
     </section>
 
     <section class="section reveal-section" id="mulakat">
-      <div class="card parallax" data-speed="0.12">
-        <div class="content section-grid">
+      <div class="card">
+        <div class="content section-grid parallax" data-speed="0.12">
           <div>
             <h2>Mulakat</h2>
             <p class="section-text">
@@ -766,8 +898,8 @@ Aur is ehsaas ko samajhne ke liye...
     </section>
 
     <section class="section reveal-section" id="nazdikiya">
-      <div class="card parallax" data-speed="0.1">
-        <div class="content section-grid">
+      <div class="card">
+        <div class="content section-grid parallax" data-speed="0.1">
           <div>
             <h2>Nazdikiya</h2>
             <p class="section-text">
@@ -802,8 +934,8 @@ Unhe bhi mehsoos kiya jaata hai.
     </section>
 
     <section class="section reveal-section" id="sukoon">
-      <div class="card parallax" data-speed="0.12">
-        <div class="content section-grid">
+      <div class="card">
+        <div class="content section-grid parallax" data-speed="0.12">
           <div>
             <h2>Sukoon</h2>
             <p class="section-text">
@@ -837,8 +969,8 @@ Par humare paas iske liye ek aur khoobsurat naam hai.
     </section>
 
     <section class="section reveal-section" id="bichadna">
-      <div class="card parallax" data-speed="0.1">
-        <div class="content section-grid">
+      <div class="card">
+        <div class="content section-grid parallax" data-speed="0.1">
           <div>
             <h2>Bichadna</h2>
             <p class="section-text">
@@ -870,8 +1002,8 @@ Sirf ek baar aur.
     </section>
 
     <section class="section reveal-section" id="manzil">
-      <div class="card parallax" data-speed="0.12">
-        <div class="content section-grid">
+      <div class="card">
+        <div class="content section-grid parallax" data-speed="0.12">
           <div>
             <h2>Manzil</h2>
             <p class="section-text">
@@ -911,8 +1043,8 @@ Kismat ke bharose kyun rahe?
     </section>
 
     <section class="section reveal-section final-section" id="final">
-      <div class="card parallax" data-speed="0.08">
-        <div class="content">
+      <div class="card">
+        <div class="content parallax" data-speed="0.08">
           <div class="quote-block final-glow">
 "Kya bas itna hi tha?
 
@@ -936,6 +1068,19 @@ Abhi bahut baaki hain."
     </section>
   </main>
 
+  <nav class="nav-controls" aria-label="Page navigation">
+    <button class="nav-btn" id="prevBtn" type="button" aria-label="Previous Page">
+      ← Before
+    </button>
+    <a class="nav-spotify-btn hidden" id="navSpotifyBtn" target="_blank" rel="noopener noreferrer" href="#">
+      <span class="spotify-icon">♪</span> Play on Spotify
+    </a>
+    <span class="nav-indicator" id="navIndicator">1 / 7</span>
+    <button class="nav-btn" id="nextBtn" type="button" aria-label="Next Page">
+      Next →
+    </button>
+  </nav>
+
   <footer>
     <div class="fade-divider"></div>
     Crafted like a quiet old film, meant to be felt slowly.
@@ -955,26 +1100,77 @@ Abhi bahut baaki hain."
     }
     typeWriter();
 
-    const sections = document.querySelectorAll('.reveal-section');
+    const allSections = document.querySelectorAll('.section');
     const finalQuestion = document.getElementById('finalQuestion');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const navIndicator = document.getElementById('navIndicator');
+    const navSpotifyBtn = document.getElementById('navSpotifyBtn');
+    
+    let currentPageIndex = 0;
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          if (entry.target.id === 'final') {
+    function showPage(index) {
+      if (index < 0 || index >= allSections.length) return;
+      
+      currentPageIndex = index;
+      
+      allSections.forEach((section, i) => {
+        if (i === index) {
+          section.classList.add('active', 'visible');
+          
+          if (section.id === 'final') {
             setTimeout(() => finalQuestion.classList.add('reveal'), 700);
           }
+        } else {
+          section.classList.remove('active', 'visible');
         }
       });
-    }, { threshold: 0.28 });
 
-    sections.forEach(section => observer.observe(section));
+      prevBtn.disabled = (index === 0);
+      nextBtn.disabled = (index === allSections.length - 1);
+      
+      navIndicator.textContent = `${index + 1} / ${allSections.length}`;
+      
+      const activeSection = allSections[index];
+      const songBtnOnPage = activeSection.querySelector('.song-button');
+      if (songBtnOnPage) {
+        navSpotifyBtn.href = songBtnOnPage.href;
+        navSpotifyBtn.classList.remove('hidden');
+      } else {
+        navSpotifyBtn.classList.add('hidden');
+      }
 
-    const allSections = document.querySelectorAll('.section');
-    allSections.forEach(section => {
-      if (section.id === 'hero') section.classList.add('visible');
+      if (typeof updateMusic === 'function') {
+        updateMusic();
+      }
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentPageIndex > 0) {
+        showPage(currentPageIndex - 1);
+      }
     });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentPageIndex < allSections.length - 1) {
+        showPage(currentPageIndex + 1);
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        if (currentPageIndex > 0) {
+          showPage(currentPageIndex - 1);
+        }
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+        if (e.key === ' ') e.preventDefault();
+        if (currentPageIndex < allSections.length - 1) {
+          showPage(currentPageIndex + 1);
+        }
+      }
+    });
+
+    showPage(0);
 
     const starsContainer = document.getElementById('stars');
     const sparklesContainer = document.getElementById('sparkles');
@@ -1028,19 +1224,24 @@ Abhi bahut baaki hain."
       el.style.opacity = (Math.random() * 0.22 + 0.14).toFixed(2);
     });
 
+    const parallaxItems = document.querySelectorAll('.parallax');
+    
     document.addEventListener('mousemove', (e) => {
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
+      
       document.documentElement.style.setProperty('--mouse-x', e.clientX + 'px');
       document.documentElement.style.setProperty('--mouse-y', e.clientY + 'px');
+      
+      const activeSection = allSections[currentPageIndex];
+      if (activeSection) {
+        const parallaxItem = activeSection.querySelector('.parallax');
+        if (parallaxItem) {
+          const speed = parseFloat(parallaxItem.dataset.speed || '0.08');
+          const yOffset = ny * speed * -120;
+          parallaxItem.style.setProperty('--parallax-offset', `${yOffset}px`);
+        }
+      }
     });
-
-    const parallaxItems = document.querySelectorAll('.parallax');
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      parallaxItems.forEach(item => {
-        const speed = parseFloat(item.dataset.speed || '0.08');
-        item.style.setProperty('--parallax-offset', `${y * speed * -0.08}px`);
-      });
-    }, { passive: true });
 
     const music = document.getElementById('ambientMusic');
     const musicToggle = document.getElementById('musicToggle');
@@ -1048,16 +1249,71 @@ Abhi bahut baaki hain."
 
     music.volume = 0.35;
 
+    // Background container for YouTube autoplay audio
+    const audioContainer = document.createElement('div');
+    audioContainer.id = 'audioContainer';
+    audioContainer.style.position = 'absolute';
+    audioContainer.style.width = '1px';
+    audioContainer.style.height = '1px';
+    audioContainer.style.opacity = '0.01';
+    audioContainer.style.overflow = 'hidden';
+    audioContainer.style.left = '-9999px';
+    audioContainer.style.top = '-9999px';
+    document.body.appendChild(audioContainer);
+
+    const youtubeIds = {
+      'mulakat': 'kYJqD2t0L44',
+      'nazdikiya': '0k5i5vW1yM0',
+      'sukoon': 'kYv9i718i-s',
+      'bichadna': '3R-c24wH86k',
+      'manzil': 'l4j717t04m8'
+    };
+
+    let isMusicEnabled = false;
+
+    function updateMusic() {
+      const activeSection = allSections[currentPageIndex];
+      const videoId = youtubeIds[activeSection.id];
+
+      // Stop current YouTube song
+      audioContainer.innerHTML = '';
+
+      if (!isMusicEnabled) {
+        music.pause();
+        musicLabel.textContent = 'Music Off';
+        return;
+      }
+
+      if (videoId) {
+        // Pause ambient loop, play page song
+        music.pause();
+        audioContainer.innerHTML = `<iframe width="640" height="360" src="https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&enablejsapi=1" style="border:0;" allow="autoplay; encrypted-media"></iframe>`;
+        
+        const titleEl = activeSection.querySelector('.song-title');
+        if (titleEl) {
+          musicLabel.textContent = `Playing: ${titleEl.textContent}`;
+        } else {
+          musicLabel.textContent = 'Music On';
+        }
+      } else {
+        // Play ambient loop
+        if (music.paused) {
+          music.play().catch(err => console.log('Audio autoplay blocked:', err));
+        }
+        musicLabel.textContent = 'Ambient Music On';
+      }
+    }
+
     musicToggle.addEventListener('click', async () => {
       try {
-        if (music.paused) {
-          await music.play();
+        if (!isMusicEnabled) {
+          isMusicEnabled = true;
           musicToggle.classList.remove('paused');
-          musicLabel.textContent = 'Ambient Music On';
+          updateMusic();
         } else {
-          music.pause();
+          isMusicEnabled = false;
           musicToggle.classList.add('paused');
-          musicLabel.textContent = 'Ambient Music Off';
+          updateMusic();
         }
       } catch (err) {
         musicLabel.textContent = 'Tap Again for Music';
