@@ -612,6 +612,68 @@
       transition: opacity var(--transition-fast), transform var(--transition-fast);
     }
 
+    /* Floating Music Toggle Button */
+    .music-toggle {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+      font-family: "Inter", sans-serif;
+      outline: none;
+    }
+
+    .music-toggle:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px var(--glow-pink);
+    }
+
+    .music-toggle:active {
+      transform: translateY(0);
+    }
+
+    .music-toggle.muted {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+    }
+
+    .music-toggle.muted:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .music-toggle .music-icon {
+      font-size: 1.1rem;
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+
+    .music-toggle:not(.muted) .music-icon {
+      animation: pulseMusic 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseMusic {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.15); }
+    }
+
     .nav-btn {
       display: inline-flex;
       align-items: center;
@@ -669,12 +731,6 @@
         min-height: 200px;
       }
 
-      .music-toggle {
-        top: 12px;
-        right: 12px;
-        padding: 10px 14px;
-        font-size: 0.85rem;
-      }
 
       .hero-text,
       .section-text {
@@ -694,6 +750,13 @@
     }
 
     @media (max-width: 600px) {
+      .music-toggle {
+        top: 16px;
+        right: 16px;
+        padding: 8px 14px;
+        font-size: 0.8rem;
+      }
+
       .nav-controls {
         bottom: 16px;
         gap: 8px;
@@ -743,7 +806,31 @@
   <div class="hearts-layer" id="hearts" aria-hidden="true"></div>
   <div class="mouse-glow" aria-hidden="true"></div>
 
-  <audio id="ambientMusic" loop autoplay>
+  <!-- Floating Music Toggle Button -->
+  <button class="music-toggle" id="musicToggleBtn" aria-label="Toggle Music" title="Toggle Music">
+    <span class="music-icon">🔊</span>
+    <span class="music-text">Music On</span>
+  </button>
+
+  <audio id="audio-hero" loop preload="auto">
+    <source src="https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audio-mulakat" loop preload="auto">
+    <source src="Ek Ajnabee Haseena Se.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audio-nazdikiya" loop preload="auto">
+    <source src="Yeh Sham Mastani   Kishore Kumar.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audio-sukoon" loop preload="auto">
+    <source src="Pal Pal Dil Ke Paas (from Blackmail) - Release (youtube).mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audio-bichadna" loop preload="auto">
+    <source src="Lag Ja Gale Se Phir   Lata Mangeshkar.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audio-manzil" loop preload="auto">
+    <source src="Abhi Na Jao Chhod Kar   Asha Bhosle, Mohammed Rafi.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audio-final" loop preload="auto">
     <source src="https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3" type="audio/mpeg">
   </audio>
 
@@ -1152,57 +1239,198 @@ Abhi bahut baaki hain."
       }
     });
 
-    const music = document.getElementById('ambientMusic');
-    music.volume = 0.35;
+    let currentAudio = null;
+    let hasInteracted = false;
+    let musicMuted = false;
 
-    // Mapping local audio files for each page section
-    const localSongs = {
-      'hero': 'https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3', // Soft ambient song for page 1
-      'mulakat': 'Ek Ajnabee Haseena Se.mp3',
-      'nazdikiya': 'Yeh Sham Mastani   Kishore Kumar.mp3',
-      'sukoon': 'Pal Pal Dil Ke Paas (from Blackmail) - Release (youtube).mp3',
-      'bichadna': 'Lag Ja Gale Se Phir   Lata Mangeshkar.mp3',
-      'manzil': 'Abhi Na Jao Chhod Kar   Asha Bhosle, Mohammed Rafi.mp3',
-      'final': 'https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3' // Same soft song for final page
+    // Pre-initialize volumes for all audio elements
+    const allAudios = {
+      'hero': document.getElementById('audio-hero'),
+      'mulakat': document.getElementById('audio-mulakat'),
+      'nazdikiya': document.getElementById('audio-nazdikiya'),
+      'sukoon': document.getElementById('audio-sukoon'),
+      'bichadna': document.getElementById('audio-bichadna'),
+      'manzil': document.getElementById('audio-manzil'),
+      'final': document.getElementById('audio-final')
     };
 
-    let hasInteracted = false;
+    Object.values(allAudios).forEach(audioEl => {
+      if (audioEl) audioEl.volume = 0.35;
+    });
+
+    function fadeOut(audio, duration = 600) {
+      if (!audio) return Promise.resolve();
+      return new Promise((resolve) => {
+        const startVolume = audio.volume;
+        const startTime = performance.now();
+
+        function tick(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          audio.volume = startVolume * (1 - progress);
+
+          if (progress < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            audio.pause();
+            audio.volume = 0.35; // Restore volume back for when it plays next time
+            resolve();
+          }
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+
+    function fadeIn(audio, targetVolume = 0.35, duration = 600) {
+      if (!audio) return Promise.resolve();
+      audio.volume = 0;
+      
+      return audio.play().then(() => {
+        return new Promise((resolve) => {
+          const startTime = performance.now();
+
+          function tick(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            audio.volume = targetVolume * progress;
+
+            if (progress < 1) {
+              requestAnimationFrame(tick);
+            } else {
+              audio.volume = targetVolume;
+              resolve();
+            }
+          }
+          requestAnimationFrame(tick);
+        });
+      });
+    }
 
     function updateMusic() {
       const activeSection = allSections[currentPageIndex];
-      const songFile = localSongs[activeSection.id];
+      const nextAudio = allAudios[activeSection.id];
 
       // Remove the playing class from all visualizers first
       document.querySelectorAll('.visualizer-container').forEach(container => {
         container.classList.remove('playing');
       });
 
-      if (songFile) {
-        const currentSrc = music.getAttribute('src');
-        // Ensure relative URLs match correctly when resolving absolute paths
-        const absoluteSongFile = new URL(songFile, window.location.href).href;
-        
-        if (currentSrc !== absoluteSongFile) {
-          music.src = songFile;
-          music.load();
-        }
+      const prevAudio = currentAudio;
 
-        if (hasInteracted) {
-          music.play()
+      if (nextAudio) {
+        currentAudio = nextAudio;
+
+        if (hasInteracted && !musicMuted) {
+          if (prevAudio && prevAudio !== nextAudio) {
+            fadeOut(prevAudio, 600).then(() => {
+              fadeIn(nextAudio, 0.35, 600)
+                .then(() => {
+                  const visualizer = activeSection.querySelector('.visualizer-container');
+                  if (visualizer && !musicMuted && currentAudio === nextAudio) {
+                    visualizer.classList.add('playing');
+                  }
+                })
+                .catch(err => {
+                  console.log('Playback error:', err);
+                  if (activeSection.id === 'hero' || activeSection.id === 'final') {
+                    playLocalFallback(activeSection);
+                  }
+                });
+            });
+          } else if (!prevAudio || prevAudio !== nextAudio) {
+            fadeIn(nextAudio, 0.35, 600)
+              .then(() => {
+                const visualizer = activeSection.querySelector('.visualizer-container');
+                if (visualizer && !musicMuted) {
+                  visualizer.classList.add('playing');
+                }
+              })
+              .catch(err => {
+                console.log('Playback error:', err);
+                if (activeSection.id === 'hero' || activeSection.id === 'final') {
+                  playLocalFallback(activeSection);
+                }
+              });
+          } else {
+            // Already playing
+            const visualizer = activeSection.querySelector('.visualizer-container');
+            if (visualizer && !musicMuted) {
+              visualizer.classList.add('playing');
+            }
+          }
+        } else {
+          // If we haven't interacted yet, or we are muted, just pause prevAudio
+          if (prevAudio && prevAudio !== nextAudio) {
+            prevAudio.pause();
+          }
+        }
+      } else {
+        if (prevAudio) {
+          prevAudio.pause();
+        }
+      }
+    }
+
+    function playLocalFallback(activeSection) {
+      const fallbackAudio = allAudios['sukoon'];
+      if (fallbackAudio) {
+        if (currentAudio && currentAudio !== fallbackAudio) {
+          currentAudio.pause();
+        }
+        currentAudio = fallbackAudio;
+        if (!musicMuted) {
+          fadeIn(fallbackAudio, 0.35, 600)
             .then(() => {
+              console.log('Local fallback playing successfully.');
               const visualizer = activeSection.querySelector('.visualizer-container');
-              if (visualizer) {
+              if (visualizer && !musicMuted) {
                 visualizer.classList.add('playing');
               }
             })
-            .catch(err => {
-              console.log('Audio playback blocked by browser:', err);
-            });
+            .catch(err => console.log('Fallback play failed:', err));
         }
-      } else {
-        music.pause();
       }
     }
+
+    const musicToggleBtn = document.getElementById('musicToggleBtn');
+    
+    musicToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      
+      if (!hasInteracted) {
+        handleFirstInteraction();
+        return;
+      }
+
+      musicMuted = !musicMuted;
+      
+      if (musicMuted) {
+        musicToggleBtn.classList.add('muted');
+        musicToggleBtn.querySelector('.music-icon').textContent = '🔇';
+        musicToggleBtn.querySelector('.music-text').textContent = 'Music Off';
+        if (currentAudio) {
+          fadeOut(currentAudio, 400);
+        }
+        document.querySelectorAll('.visualizer-container').forEach(container => {
+          container.classList.remove('playing');
+        });
+      } else {
+        musicToggleBtn.classList.remove('muted');
+        musicToggleBtn.querySelector('.music-icon').textContent = '🔊';
+        musicToggleBtn.querySelector('.music-text').textContent = 'Music On';
+        if (currentAudio) {
+          fadeIn(currentAudio, 0.35, 400)
+            .then(() => {
+              const activeSection = allSections[currentPageIndex];
+              const visualizer = activeSection.querySelector('.visualizer-container');
+              if (visualizer && !musicMuted) {
+                visualizer.classList.add('playing');
+              }
+            })
+            .catch(err => console.log('Playback error:', err));
+        }
+      }
+    });
 
     // Trigger music once the user interacts with the page
     function handleFirstInteraction() {
@@ -1213,6 +1441,11 @@ Abhi bahut baaki hain."
       document.removeEventListener('click', handleFirstInteraction);
       document.removeEventListener('keydown', handleFirstInteraction);
       document.removeEventListener('touchstart', handleFirstInteraction);
+
+      // Force load all audio files on interaction so they are ready to play
+      Object.values(allAudios).forEach(audioEl => {
+        if (audioEl) audioEl.load();
+      });
 
       updateMusic();
     }
