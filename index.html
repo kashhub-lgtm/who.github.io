@@ -210,51 +210,7 @@
       100% { transform: translateY(-8vh) translateX(16px) scale(0.75); opacity: 0; }
     }
 
-    .music-toggle {
-      position: fixed;
-      top: 18px;
-      right: 18px;
-      z-index: 20;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      border: 1px solid var(--glass-border);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      color: var(--text);
-      font-size: 0.92rem;
-      box-shadow: var(--shadow);
-      transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
-      cursor: pointer;
-    }
 
-    .music-toggle:hover {
-      transform: translateY(-2px);
-      background: rgba(255,255,255,0.14);
-      border-color: rgba(255,255,255,0.34);
-    }
-
-    .music-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--soft-pink), var(--lavender));
-      box-shadow: 0 0 14px rgba(255, 182, 212, 0.55);
-      animation: pulse 1.8s ease-in-out infinite;
-    }
-
-    .music-toggle.paused .music-dot {
-      opacity: 0.45;
-      animation-play-state: paused;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.8; }
-      50% { transform: scale(1.4); opacity: 1; }
-    }
 
     .page {
       position: relative;
@@ -534,42 +490,40 @@
       color: #fff8fd;
     }
 
-    .song-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
+    /* Audio Visualizer */
+    .visualizer-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 36px;
+      margin-top: 8px;
       width: fit-content;
-      padding: 14px 22px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, rgba(242,182,212,0.24), rgba(184,156,255,0.24));
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      box-shadow:
-        0 10px 25px rgba(0,0,0,0.18),
-        0 0 20px rgba(184,156,255,0.12);
-      transition:
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background var(--transition-fast);
     }
 
-    .song-button:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow:
-        0 16px 35px rgba(0,0,0,0.28),
-        0 0 25px rgba(242,182,212,0.18);
-      background: linear-gradient(135deg, rgba(242,182,212,0.32), rgba(184,156,255,0.32));
+    .visualizer-bar {
+      width: 4px;
+      height: 15%;
+      background: linear-gradient(to top, var(--lavender), var(--soft-pink));
+      border-radius: 2px;
+      transition: height 0.15s ease;
+      animation: bounce 1.2s ease-in-out infinite alternate;
+      animation-play-state: paused;
     }
 
-    .song-button:active {
-      transform: translateY(0) scale(0.99);
+    /* Stagger the animation of each bar */
+    .visualizer-bar:nth-child(1) { animation-delay: 0.1s; animation-duration: 0.8s; }
+    .visualizer-bar:nth-child(2) { animation-delay: 0.3s; animation-duration: 1.1s; }
+    .visualizer-bar:nth-child(3) { animation-delay: 0.5s; animation-duration: 0.9s; }
+    .visualizer-bar:nth-child(4) { animation-delay: 0.2s; animation-duration: 1.2s; }
+    .visualizer-bar:nth-child(5) { animation-delay: 0.4s; animation-duration: 1.0s; }
+
+    .playing .visualizer-bar {
+      animation-play-state: running;
     }
 
-    .song-button span.icon {
-      font-size: 1rem;
+    @keyframes bounce {
+      0% { height: 15%; }
+      100% { height: 100%; }
     }
 
     .parallax {
@@ -700,39 +654,6 @@
       text-align: center;
     }
 
-    .nav-spotify-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 18px;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      color: #fff;
-      background: linear-gradient(135deg, rgba(29, 185, 84, 0.25), rgba(20, 150, 65, 0.25));
-      border: 1px solid rgba(29, 185, 84, 0.4);
-      text-decoration: none;
-      font-family: "Inter", sans-serif;
-    }
-
-    .nav-spotify-btn:hover {
-      background: linear-gradient(135deg, rgba(29, 185, 84, 0.45), rgba(20, 150, 65, 0.45));
-      border-color: rgba(29, 185, 84, 0.7);
-      box-shadow: 
-        0 8px 20px rgba(29, 185, 84, 0.22),
-        0 0 15px rgba(29, 185, 84, 0.15);
-      transform: translateY(-2px);
-    }
-
-    .nav-spotify-btn:active {
-      transform: translateY(0);
-    }
-
-    .nav-spotify-btn.hidden {
-      display: none;
-    }
 
     @media (max-width: 900px) {
       .section-grid {
@@ -784,10 +705,6 @@
         padding: 8px 12px;
         font-size: 0.82rem;
       }
-      .nav-spotify-btn {
-        padding: 8px 12px;
-        font-size: 0.82rem;
-      }
       .nav-indicator {
         font-size: 0.8rem;
         min-width: 36px;
@@ -826,13 +743,8 @@
   <div class="hearts-layer" id="hearts" aria-hidden="true"></div>
   <div class="mouse-glow" aria-hidden="true"></div>
 
-  <button class="music-toggle paused" id="musicToggle" type="button" aria-label="Toggle music playback">
-    <span class="music-dot"></span>
-    <span id="musicLabel">Music Off</span>
-  </button>
-
-  <audio id="ambientMusic" loop>
-    <source src="[cdn.pixabay.com](https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3)" type="audio/mpeg">
+  <audio id="ambientMusic" loop autoplay>
+    <source src="https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3" type="audio/mpeg">
   </audio>
 
   <main class="page">
@@ -886,11 +798,13 @@ Aur is ehsaas ko samajhne ke liye...
             <div class="mini-card">
               <div class="song-label">Song</div>
               <div class="song-title">Ek Ajnabee Haseena Se</div>
-              <a class="song-button" target="_blank" rel="noopener noreferrer"
-                 href="[open.spotify.com](https://open.spotify.com/search/Ek%20Ajnabee%20Haseena%20Se%20Kishore%20Kumar)">
-                <span class="icon">♪</span>
-                <span>Play on Spotify</span>
-              </a>
+              <div class="visualizer-container">
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -922,11 +836,13 @@ Unhe bhi mehsoos kiya jaata hai.
             <div class="mini-card">
               <div class="song-label">Song</div>
               <div class="song-title">Ye Shaam Mastani</div>
-              <a class="song-button" target="_blank" rel="noopener noreferrer"
-                 href="[open.spotify.com](https://open.spotify.com/search/Ye%20Shaam%20Mastani%20Kishore%20Kumar)">
-                <span class="icon">♪</span>
-                <span>Play on Spotify</span>
-              </a>
+              <div class="visualizer-container">
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -957,11 +873,13 @@ Par humare paas iske liye ek aur khoobsurat naam hai.
             <div class="mini-card">
               <div class="song-label">Song</div>
               <div class="song-title">Pal Pal Dil Ke Paas</div>
-              <a class="song-button" target="_blank" rel="noopener noreferrer"
-                 href="[open.spotify.com](https://open.spotify.com/search/Pal%20Pal%20Dil%20Ke%20Paas%20Kishore%20Kumar)">
-                <span class="icon">♪</span>
-                <span>Play on Spotify</span>
-              </a>
+              <div class="visualizer-container">
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -990,11 +908,13 @@ Sirf ek baar aur.
             <div class="mini-card">
               <div class="song-label">Song</div>
               <div class="song-title">Lag Ja Gale</div>
-              <a class="song-button" target="_blank" rel="noopener noreferrer"
-                 href="[open.spotify.com](https://open.spotify.com/search/Lag%20Ja%20Gale%20Lata%20Mangeshkar)">
-                <span class="icon">♪</span>
-                <span>Play on Spotify</span>
-              </a>
+              <div class="visualizer-container">
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1031,11 +951,13 @@ Kismat ke bharose kyun rahe?
             <div class="mini-card">
               <div class="song-label">Song</div>
               <div class="song-title">Abhi Na Jao Chhod Kar</div>
-              <a class="song-button" target="_blank" rel="noopener noreferrer"
-                 href="[open.spotify.com](https://open.spotify.com/search/Abhi%20Na%20Jao%20Chhod%20Kar%20Mohammed%20Rafi)">
-                <span class="icon">♪</span>
-                <span>Play on Spotify</span>
-              </a>
+              <div class="visualizer-container">
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -1072,9 +994,6 @@ Abhi bahut baaki hain."
     <button class="nav-btn" id="prevBtn" type="button" aria-label="Previous Page">
       ← Before
     </button>
-    <a class="nav-spotify-btn hidden" id="navSpotifyBtn" target="_blank" rel="noopener noreferrer" href="#">
-      <span class="spotify-icon">♪</span> Play on Spotify
-    </a>
     <span class="nav-indicator" id="navIndicator">1 / 7</span>
     <button class="nav-btn" id="nextBtn" type="button" aria-label="Next Page">
       Next →
@@ -1105,7 +1024,6 @@ Abhi bahut baaki hain."
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     const navIndicator = document.getElementById('navIndicator');
-    const navSpotifyBtn = document.getElementById('navSpotifyBtn');
     
     let currentPageIndex = 0;
 
@@ -1131,15 +1049,6 @@ Abhi bahut baaki hain."
       
       navIndicator.textContent = `${index + 1} / ${allSections.length}`;
       
-      const activeSection = allSections[index];
-      const songBtnOnPage = activeSection.querySelector('.song-button');
-      if (songBtnOnPage) {
-        navSpotifyBtn.href = songBtnOnPage.href;
-        navSpotifyBtn.classList.remove('hidden');
-      } else {
-        navSpotifyBtn.classList.add('hidden');
-      }
-
       if (typeof updateMusic === 'function') {
         updateMusic();
       }
@@ -1244,81 +1153,73 @@ Abhi bahut baaki hain."
     });
 
     const music = document.getElementById('ambientMusic');
-    const musicToggle = document.getElementById('musicToggle');
-    const musicLabel = document.getElementById('musicLabel');
-
     music.volume = 0.35;
 
-    // Background container for YouTube autoplay audio
-    const audioContainer = document.createElement('div');
-    audioContainer.id = 'audioContainer';
-    audioContainer.style.position = 'absolute';
-    audioContainer.style.width = '1px';
-    audioContainer.style.height = '1px';
-    audioContainer.style.opacity = '0.01';
-    audioContainer.style.overflow = 'hidden';
-    audioContainer.style.left = '-9999px';
-    audioContainer.style.top = '-9999px';
-    document.body.appendChild(audioContainer);
-
-    const youtubeIds = {
-      'mulakat': 'kYJqD2t0L44',
-      'nazdikiya': '0k5i5vW1yM0',
-      'sukoon': 'kYv9i718i-s',
-      'bichadna': '3R-c24wH86k',
-      'manzil': 'l4j717t04m8'
+    // Mapping local audio files for each page section
+    const localSongs = {
+      'hero': 'https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3', // Soft ambient song for page 1
+      'mulakat': 'Ek Ajnabee Haseena Se.mp3',
+      'nazdikiya': 'Yeh Sham Mastani   Kishore Kumar.mp3',
+      'sukoon': 'Pal Pal Dil Ke Paas (from Blackmail) - Release (youtube).mp3',
+      'bichadna': 'Lag Ja Gale Se Phir   Lata Mangeshkar.mp3',
+      'manzil': 'Abhi Na Jao Chhod Kar   Asha Bhosle, Mohammed Rafi.mp3',
+      'final': 'https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3' // Same soft song for final page
     };
 
-    let isMusicEnabled = false;
+    let hasInteracted = false;
 
     function updateMusic() {
       const activeSection = allSections[currentPageIndex];
-      const videoId = youtubeIds[activeSection.id];
+      const songFile = localSongs[activeSection.id];
 
-      // Stop current YouTube song
-      audioContainer.innerHTML = '';
+      // Remove the playing class from all visualizers first
+      document.querySelectorAll('.visualizer-container').forEach(container => {
+        container.classList.remove('playing');
+      });
 
-      if (!isMusicEnabled) {
-        music.pause();
-        musicLabel.textContent = 'Music Off';
-        return;
-      }
-
-      if (videoId) {
-        // Pause ambient loop, play page song
-        music.pause();
-        audioContainer.innerHTML = `<iframe width="640" height="360" src="https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&enablejsapi=1" style="border:0;" allow="autoplay; encrypted-media"></iframe>`;
+      if (songFile) {
+        const currentSrc = music.getAttribute('src');
+        // Ensure relative URLs match correctly when resolving absolute paths
+        const absoluteSongFile = new URL(songFile, window.location.href).href;
         
-        const titleEl = activeSection.querySelector('.song-title');
-        if (titleEl) {
-          musicLabel.textContent = `Playing: ${titleEl.textContent}`;
-        } else {
-          musicLabel.textContent = 'Music On';
+        if (currentSrc !== absoluteSongFile) {
+          music.src = songFile;
+          music.load();
+        }
+
+        if (hasInteracted) {
+          music.play()
+            .then(() => {
+              const visualizer = activeSection.querySelector('.visualizer-container');
+              if (visualizer) {
+                visualizer.classList.add('playing');
+              }
+            })
+            .catch(err => {
+              console.log('Audio playback blocked by browser:', err);
+            });
         }
       } else {
-        // Play ambient loop
-        if (music.paused) {
-          music.play().catch(err => console.log('Audio autoplay blocked:', err));
-        }
-        musicLabel.textContent = 'Ambient Music On';
+        music.pause();
       }
     }
 
-    musicToggle.addEventListener('click', async () => {
-      try {
-        if (!isMusicEnabled) {
-          isMusicEnabled = true;
-          musicToggle.classList.remove('paused');
-          updateMusic();
-        } else {
-          isMusicEnabled = false;
-          musicToggle.classList.add('paused');
-          updateMusic();
-        }
-      } catch (err) {
-        musicLabel.textContent = 'Tap Again for Music';
-      }
-    });
+    // Trigger music once the user interacts with the page
+    function handleFirstInteraction() {
+      if (hasInteracted) return;
+      hasInteracted = true;
+
+      // Remove the event listeners after first interaction
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+
+      updateMusic();
+    }
+
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
+    document.addEventListener('touchstart', handleFirstInteraction);
   </script>
 </body>
 </html>
