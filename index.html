@@ -812,9 +812,6 @@
     <span class="music-text">Music On</span>
   </button>
 
-  <audio id="audio-hero" loop preload="auto">
-    <source src="https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3" type="audio/mpeg">
-  </audio>
   <audio id="audio-mulakat" loop preload="auto">
     <source src="Ek Ajnabee Haseena Se.mp3" type="audio/mpeg">
   </audio>
@@ -829,9 +826,6 @@
   </audio>
   <audio id="audio-manzil" loop preload="auto">
     <source src="Abhi Na Jao Chhod Kar   Asha Bhosle, Mohammed Rafi.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="audio-final" loop preload="auto">
-    <source src="https://cdn.pixabay.com/audio/2023/06/14/audio_1c4f2d6f5f.mp3" type="audio/mpeg">
   </audio>
 
   <main class="page">
@@ -1245,13 +1239,11 @@ Abhi bahut baaki hain."
 
     // Pre-initialize volumes for all audio elements
     const allAudios = {
-      'hero': document.getElementById('audio-hero'),
       'mulakat': document.getElementById('audio-mulakat'),
       'nazdikiya': document.getElementById('audio-nazdikiya'),
       'sukoon': document.getElementById('audio-sukoon'),
       'bichadna': document.getElementById('audio-bichadna'),
-      'manzil': document.getElementById('audio-manzil'),
-      'final': document.getElementById('audio-final')
+      'manzil': document.getElementById('audio-manzil')
     };
 
     Object.values(allAudios).forEach(audioEl => {
@@ -1332,9 +1324,6 @@ Abhi bahut baaki hain."
                 })
                 .catch(err => {
                   console.log('Playback error:', err);
-                  if (activeSection.id === 'hero' || activeSection.id === 'final') {
-                    playLocalFallback(activeSection);
-                  }
                 });
             });
           } else if (!prevAudio || prevAudio !== nextAudio) {
@@ -1347,9 +1336,6 @@ Abhi bahut baaki hain."
               })
               .catch(err => {
                 console.log('Playback error:', err);
-                if (activeSection.id === 'hero' || activeSection.id === 'final') {
-                  playLocalFallback(activeSection);
-                }
               });
           } else {
             // Already playing
@@ -1367,27 +1353,6 @@ Abhi bahut baaki hain."
       } else {
         if (prevAudio) {
           prevAudio.pause();
-        }
-      }
-    }
-
-    function playLocalFallback(activeSection) {
-      const fallbackAudio = allAudios['sukoon'];
-      if (fallbackAudio) {
-        if (currentAudio && currentAudio !== fallbackAudio) {
-          currentAudio.pause();
-        }
-        currentAudio = fallbackAudio;
-        if (!musicMuted) {
-          fadeIn(fallbackAudio, 0.35, 600)
-            .then(() => {
-              console.log('Local fallback playing successfully.');
-              const visualizer = activeSection.querySelector('.visualizer-container');
-              if (visualizer && !musicMuted) {
-                visualizer.classList.add('playing');
-              }
-            })
-            .catch(err => console.log('Fallback play failed:', err));
         }
       }
     }
