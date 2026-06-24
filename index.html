@@ -1160,7 +1160,6 @@ Abhi bahut baaki hain."
       }
     });
 
-    showPage(0);
 
     const starsContainer = document.getElementById('stars');
     const sparklesContainer = document.getElementById('sparkles');
@@ -1246,9 +1245,11 @@ Abhi bahut baaki hain."
       'manzil': document.getElementById('audio-manzil')
     };
 
+
     Object.values(allAudios).forEach(audioEl => {
       if (audioEl) audioEl.volume = 0.35;
     });
+    showPage(0);
 
     function fadeOut(audio, duration = 600) {
       if (!audio) return Promise.resolve();
